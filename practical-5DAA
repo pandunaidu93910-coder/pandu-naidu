@@ -1,41 +1,54 @@
 #include <iostream>
 #include <algorithm>
-#include <chrono>
 using namespace std;
-using namespace chrono;
 
 int main() {
-    int arr[] = {45, 12, 78, 23, 56, 89, 34, 67, 11, 90, 5, 38};
-    int n = 12;
-    int temp[12];
+    int n = 4;
+    int capacity = 8;
 
-    cout << "Enter number of elements: " << n << endl << endl;
+    int weight[] = {2, 3, 4, 5};
+    int profit[] = {1, 2, 5, 6};
 
-    // MAX HEAP SORT
-    copy(arr, arr + n, temp);
-    auto start = high_resolution_clock::now();
-    sort(temp, temp + n);          // ascending order
-    auto end = high_resolution_clock::now();
+    int dp[5][6] = {0};
 
-    auto ns = duration_cast<nanoseconds>(end - start).count();
-    auto us = duration_cast<microseconds>(end - start).count();
+    // Dynamic Programming
+    for (int i = 1; i <= n; i++) {
+        for (int w = 1; w <= capacity; w++) {
 
-    cout << "========== MAX HEAP SORT ==========" << endl;
-    cout << "Nanoseconds : " << ns << " ns" << endl;
-    cout << "Microseconds : " << us << " us" << endl << endl;
+            if (weight[i - 1] <= w) {
+                dp[i][w] = max(
+                    profit[i - 1] + dp[i - 1][w - weight[i - 1]],
+                    dp[i - 1][w]
+                );
+            }
+            else {
+                dp[i][w] = dp[i - 1][w];
+            }
+        }
+    }
 
-    // MIN HEAP SORT
-    copy(arr, arr + n, temp);
-    start = high_resolution_clock::now();
-    sort(temp, temp + n, greater<int>());   // descending order
-    end = high_resolution_clock::now();
+    // Find selected items
+    int w = capacity;
+    int totalWeight = 0;
+    int totalProfit = 0;
 
-    ns = duration_cast<nanoseconds>(end - start).count();
-    us = duration_cast<microseconds>(end - start).count();
+    cout << "Selected Items:" << endl;
 
-    cout << "========== MIN HEAP SORT ==========" << endl;
-    cout << "Nanoseconds : " << ns << " ns" << endl;
-    cout << "Microseconds : " << us << " us" << endl;
+    for (int i = n; i > 0; i--) {
+        if (dp[i][w] != dp[i - 1][w]) {
+            cout << "Item " << i
+                 << " -> Weight = " << weight[i - 1]
+                 << ", Profit = " << profit[i - 1] << endl;
+
+            totalWeight += weight[i - 1];
+            totalProfit += profit[i - 1];
+
+            w -= weight[i - 1];
+        }
+    }
+
+    cout << "\nTotal Weight = " << totalWeight << endl;
+    cout << "Maximum Profit = " << totalProfit << endl;
 
     return 0;
 }
