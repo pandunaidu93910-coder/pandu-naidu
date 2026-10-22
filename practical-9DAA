@@ -1,67 +1,50 @@
 #include <iostream>
-#include <vector>
-#include <queue>
-#include <chrono>
 using namespace std;
-using namespace chrono;
 
-vector<vector<int>> g;
-vector<bool> vis;
-
-void dfs(int v){
-    vis[v] = true;
-    cout << v << " ";
-    for(int x : g[v])
-        if(!vis[x]) dfs(x);
-}
-
-void bfs(int s){
-    fill(vis.begin(), vis.end(), false);
-    queue<int> q;
-    q.push(s);
-    vis[s] = true;
-    while(!q.empty()){
-        int v = q.front(); q.pop();
-        cout << v << " ";
-        for(int x : g[v])
-            if(!vis[x]){
-                vis[x] = true;
-                q.push(x);
-            }
-    }
-}
-
-int main(){
-    int V, E, u, v, start;
+int main() {
+    int n;
     cout << "Enter number of vertices: ";
-    cin >> V;
-    cout << "Enter number of edges: ";
-    cin >> E;
+    cin >> n;
 
-    g.resize(V);
-    vis.resize(V);
+    int graph[10][10];
 
-    cout << "Enter edges (u v):\n";
-    while(E--){
-        cin >> u >> v;
-        g[u].push_back(v);
-        g[v].push_back(u);
+    cout << "Enter adjacency matrix:\n";
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < n; j++)
+            cin >> graph[i][j];
+
+    int selected[10] = {0};
+    selected[0] = 1;
+
+    int edges = 0, total = 0;
+
+    cout << "\nEdges in Minimum Spanning Tree:\n";
+
+    while (edges < n - 1) {
+        int min = 9999;
+        int x = 0, y = 0;
+
+        for (int i = 0; i < n; i++) {
+            if (selected[i]) {
+                for (int j = 0; j < n; j++) {
+                    if (!selected[j] && graph[i][j] != 0 &&
+                        graph[i][j] < min) {
+                        min = graph[i][j];
+                        x = i;
+                        y = j;
+                    }
+                }
+            }
+        }
+
+        cout << x << " - " << y << " : " << graph[x][y] << endl;
+
+        total += graph[x][y];
+        selected[y] = 1;
+        edges++;
     }
 
-    cout << "Enter starting vertex: ";
-    cin >> start;
+    cout << "Minimum cost = " << total << endl;
 
-    auto t1 = high_resolution_clock::now();
-    cout << "\nDFS Traversal: ";
-    dfs(start);
-    auto t2 = high_resolution_clock::now();
-
-    auto t3 = high_resolution_clock::now();
-    cout << "\n\nBFS Traversal: ";
-    bfs(start);
-    auto t4 = high_resolution_clock::now();
-
-    cout << "\n\nExecution Time:";
-    cout << "\nDFS: " << duration_cast<nanoseconds>(t2 - t1).count() << " ns";
-    cout << "\nBFS: " << duration_cast<nanoseconds>(t4 - t3).count() << " ns";
+    return 0;
 }
