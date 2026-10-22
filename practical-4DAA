@@ -1,41 +1,51 @@
 #include <iostream>
-#include <algorithm>
 #include <chrono>
 using namespace std;
-using namespace chrono;
+using namespace std::chrono;
 
-int main() {
-    int arr[] = {45, 12, 78, 23, 56, 89, 34, 67, 11, 90, 5, 38};
-    int n = 12;
-    int temp[12];
+// Recursive Function
+long long recursiveFactorial(int n)
+{
+    if (n == 0 || n == 1)
+        return 1;
+    return n * recursiveFactorial(n - 1);
+}
 
-    cout << "Enter number of elements: " << n << endl << endl;
+// Iterative Function
+long long iterativeFactorial(int n)
+{
+    long long fact = 1;
+    for (int i = 1; i <= n; i++)
+        fact *= i;
+    return fact;
+}
 
-    // MAX HEAP SORT
-    copy(arr, arr + n, temp);
-    auto start = high_resolution_clock::now();
-    sort(temp, temp + n);          // ascending order
-    auto end = high_resolution_clock::now();
+int main()
+{
+    int n;
+    cout << "Enter a number: ";
+    cin >> n;
 
-    auto ns = duration_cast<nanoseconds>(end - start).count();
-    auto us = duration_cast<microseconds>(end - start).count();
+    // Iterative Time
+    auto start1 = high_resolution_clock::now();
+    long long fact1 = iterativeFactorial(n);
+    auto end1 = high_resolution_clock::now();
 
-    cout << "========== MAX HEAP SORT ==========" << endl;
-    cout << "Nanoseconds : " << ns << " ns" << endl;
-    cout << "Microseconds : " << us << " us" << endl << endl;
+    // Recursive Time
+    auto start2 = high_resolution_clock::now();
+    long long fact2 = recursiveFactorial(n);
+    auto end2 = high_resolution_clock::now();
 
-    // MIN HEAP SORT
-    copy(arr, arr + n, temp);
-    start = high_resolution_clock::now();
-    sort(temp, temp + n, greater<int>());   // descending order
-    end = high_resolution_clock::now();
+    cout << "\nIterative Factorial = " << fact1 << endl;
+    cout << "Recursive Factorial = " << fact2 << endl;
 
-    ns = duration_cast<nanoseconds>(end - start).count();
-    us = duration_cast<microseconds>(end - start).count();
+    cout << "\nIterative Time = "
+         << duration_cast<nanoseconds>(end1 - start1).count()
+         << " ns" << endl;
 
-    cout << "========== MIN HEAP SORT ==========" << endl;
-    cout << "Nanoseconds : " << ns << " ns" << endl;
-    cout << "Microseconds : " << us << " us" << endl;
+    cout << "Recursive Time = "
+         << duration_cast<nanoseconds>(end2 - start2).count()
+         << " ns" << endl;
 
     return 0;
 }
